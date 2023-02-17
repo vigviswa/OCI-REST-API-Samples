@@ -1,3 +1,62 @@
+################################################################################
+# This code is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+# OF ANY KIND.
+# It is intended as a demonstration and should not be used for any other purposes.
+
+#
+# Note: This code is intended as a simple example of how to
+# make REST API calls to OCI's IDCS. It has little to no Error checking and will throw
+# exceptions the underlying layer throws when it encounters a problem.
+# 
+################################################################################
+
+
+################################################################################
+
+# Goal:
+
+# This python script automates the creation of confidential applications in IDCS.
+
+# Confidential Applications are required in IDCS to exchange OAuth token between IDCS and your desired application.
+# Moreover, confidential applications allow Oracle apps such as Essbase, EPM, ERP, etc. utilize IDCS as the Identity Layer.
+
+# Traditionally, users would have to create applications manually within IDCS. This script aims to eliminate manual effort
+# and allows IDCS application creation. This in turn allows creation of identity layers for your apps which may have been automated through
+# IaC technologies like Terraform
+
+
+################################################################################
+
+
+################################################################################
+
+# PRE-REQUISITES to running this Automation Script:
+
+'''
+
+1) Review IDCS REST APIs here: https://docs.oracle.com/en/cloud/paas/identity-cloud/rest-api/index.html 
+
+2) Review the creation of the Client Application for the Bearer Access Token as mentioned in the Readme.md
+
+    a) Copy the Client ID, Client Secret of your created application
+
+    b) Copy the Base URL of IDCS. Format: https://idcs-<id>.identity.oraclecloud.com
+
+3) Test out APIs operations by connecting with Postman. Steps to configure Postman: https://www.oracle.com/webfolder/technetwork/tutorials/obe/cloud/idcs/idcs_rest_postman_obe/rest_postman.html 
+
+4) Keep the confidential applications config values handy, such as Logout URL, Application URL, etc.
+
+5) Copy the Client ID, Client Secret of your created application
+
+'''
+
+################################################################################
+
+
+# Importing the required Libraries
+
+# The logging library can be used for tracking the API responses
+
 import requests
 import os
 import logging
@@ -5,11 +64,13 @@ import json
 from requests.auth import HTTPBasicAuth
 import urllib.parse
 
+# Store the Host ID, Client ID, Client Secret in environment variables
+
 host = os.environ['HOST_ID']
 client_id = os.environ['CLIENT_ID']
 secret = os.environ['CLIENT_SECRET']
 
-# Get access token
+# Required for API request tracking
 
 # from http.client import HTTPConnection  # py3
 
@@ -27,12 +88,21 @@ secret = os.environ['CLIENT_SECRET']
 
 
 # headers = {
-#     # 'Authorization': 'ZDM3YWY1YmJjOTI5NDk2Nzk0ZDRmOWE4NWE3ZWQxNTc6NWNhNzA0NmMtOGFkNi00MGY4LTliZTQtMWJjNDgxZDE2MmQ1',
+#     # 'Authorization': '',
 #     'Authorization': secret,
 #     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
 # }
 
-def get_token(endpoint: str):
+
+def get_token(endpoint: str) -> str:
+
+    '''
+
+        Configures your Oauth application in the script.
+        API call to generate Oauth Access Token.
+
+    '''
+
 
     data = {
         'grant_type' : 'client_credentials',
