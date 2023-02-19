@@ -72,6 +72,8 @@ secret = os.environ['CLIENT_SECRET']
 
 # Required for API request tracking
 
+################################################################################
+
 # from http.client import HTTPConnection  # py3
 
 # log = logging.getLogger('urllib3')
@@ -86,12 +88,13 @@ secret = os.environ['CLIENT_SECRET']
 # HTTPConnection.debuglevel = 1
 
 
-
 # headers = {
 #     # 'Authorization': '',
 #     'Authorization': secret,
 #     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
 # }
+
+################################################################################
 
 
 def get_token(endpoint: str) -> str:
@@ -117,18 +120,38 @@ def get_token(endpoint: str) -> str:
 
 def get_all_users(endpoint: str, token: str):
 
+    '''
+
+        Gets all users in your IDCS Stripe. 
+
+        Prints the Json Response of all users. 
+
+        Filter the required user, by the filter parameter in the API
+
+    '''
+
     auth = 'Bearer ' + token
     
     headers = {
         'Authorization' : auth,
         'Content-Type': 'application/json'
     }
+
     endpoint_url = f"{host}/{endpoint}"
     users = requests.get(endpoint_url, headers=headers)
-    # print(users.json())
+    print(users.json())
 
 
 def create_confidential_app(endpoint: str, token: str, displayname: str):
+
+
+    '''
+
+        Creates the Confidential Application for the given DisplayName
+
+        Change the URIs as needed
+
+    '''
 
     auth = 'Bearer ' + token
 
@@ -159,6 +182,14 @@ def create_confidential_app(endpoint: str, token: str, displayname: str):
 
 def get_apps(endpoint: str, token: str, params):
 
+    '''
+
+        Gets information of a specific IDCS application.
+
+        Use this function to check configuration, get the App ID of an App, etc.
+
+    '''
+
     auth = 'Bearer ' + token
 
     headers = {
@@ -179,6 +210,12 @@ def get_apps(endpoint: str, token: str, params):
 
 def get_approle_for_app(endpoint:str, token: str, params):
 
+    '''
+
+        Function is used to get the AppRole ID of a specific AppRole Grant
+
+    '''
+
     auth = 'Bearer ' + token
 
     headers = {
@@ -196,10 +233,12 @@ def get_approle_for_app(endpoint:str, token: str, params):
     print(response.json()["Resources"][0]["id"])
 
 
+
+
 access = get_token('oauth2/v1/token')
 users = get_all_users('admin/v1/Users', access)
-app = create_confidential_app('admin/v1/Apps', access, "TestAppDisplayname1")
-created_app_id = get_apps('admin/v1/Apps', access, {"filter" : "displayname eq \"" + "TestAppDisplayname1" + "\"",
+app = create_confidential_app('admin/v1/Apps', access, "ScriptAppDeployed")
+created_app_id = get_apps('admin/v1/Apps', access, {"filter" : "displayname eq \"" + "ScriptAppDeployed" + "\"",
                                 "attributes" : "id"})
 
 print(created_app_id)
