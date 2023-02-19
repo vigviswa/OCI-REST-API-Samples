@@ -1,2 +1,5 @@
 # OCI-REST-API-Samples
-Repository for Scripts that utilize the OCI REST APIs to interact with services on the Oracle Cloud Infrastructure (OCI)
+
+## IDCS Confidential Application Automation
+
+Script for creating a confidential application in IDCS and Grant appropriate AppRoles to the App.
