@@ -230,9 +230,54 @@ def get_approle_for_app(endpoint:str, token: str, params):
 
     
     response = requests.get(endpoint_url, headers=headers)
-    print(response.json()["Resources"][0]["id"])
+    return response.json()["Resources"][0]["id"]
 
 
+def grant_app_role_to_app(endpoint: str, token: str, app_id: str, approle_id: str):
+
+    '''
+
+        Function is used to grant AppRole the App
+
+    '''
+
+    auth = 'Bearer ' + token
+
+    headers = {
+        'Authorization' : auth,
+        'Content-Type': 'application/json'
+    }
+
+    body = {
+
+        "grantee": {
+        
+            "type": "App",
+            "value": app_id
+        },
+
+        "app": {
+        
+            "value": "IDCSAppId"
+        },
+
+        "entitlement" : {
+        
+            "attributeName": "appRoles",
+            "attributeValue": approle_id
+        },
+
+        "grantMechanism" : "ADMINISTRATOR_TO_APP",
+        "schemas": [
+            "urn:ietf:params:scim:schemas:oracle:idcs:Grant"
+        ]
+    }
+    
+    endpoint_url = f"{host}/{endpoint}"
+
+    response = requests.post(endpoint_url, headers=headers, json=body)
+
+    print(response.json())
 
 
 access = get_token('oauth2/v1/token')
@@ -248,9 +293,10 @@ client_app_id = get_apps('admin/v1/Apps', access, {"filter" : "displayname eq \"
 
 print(client_app_id)
 
-get_approle_for_app('admin/v1/AppRoles', access, {"filter" : "displayname co \"" + "Identity Domain Administrator" + "\"",
+app_role_id = get_approle_for_app('admin/v1/AppRoles', access, {"filter" : "displayname co \"" + "Identity Domain Administrator" + "\"",
 })
 
+grant_app_role_to_app('/admin/v1/Grants', access, created_app_id, app_role_id)
 
 # token_url = "oauth2/v1/token"
 
